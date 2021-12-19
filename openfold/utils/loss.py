@@ -1388,7 +1388,7 @@ def masked_msa_loss(logits, true_msa, bert_mask, eps=1e-8, **kwargs):
         Masked MSA loss
     """
     errors = softmax_cross_entropy(
-        logits, torch.nn.functional.one_hot(true_msa, num_classes=23)
+        logits, torch.nn.functional.one_hot(true_msa.long(), num_classes=23)
     )
 
     # FP16-friendly averaging. Equivalent to:

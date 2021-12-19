@@ -402,7 +402,7 @@ class AlphaFold(nn.Module):
         num_iters = batch["aatype"].shape[-1]
         for cycle_no in range(num_iters):
             # Select the features for the current recycling cycle
-            fetch_cur_batch = lambda t: t[..., cycle_no]
+            fetch_cur_batch = lambda t: t[..., min(t.shape[-1] - 1, cycle_no)]
             feats = tensor_tree_map(fetch_cur_batch, batch)
 
             # Enable grad iff we're training and it's the final recycling layer

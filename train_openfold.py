@@ -107,7 +107,7 @@ def main(args):
         seed_everything(args.seed) 
 
     config = model_config(
-        "model_1", 
+        "model_2", 
         train=True, 
         low_prec=(args.precision == 16)
     ) 
@@ -122,12 +122,12 @@ def main(args):
     # TorchScript components of the model
     script_preset_(model_module)
 
-    #data_module = DummyDataLoader("batch.pickle")
-    data_module = OpenFoldDataModule(
-        config=config.data, 
-        batch_seed=args.seed,
-        **vars(args)
-    )
+    data_module = DummyDataLoader("test_data.pickle")
+    # data_module = OpenFoldDataModule(
+    #     config=config.data, 
+    #     batch_seed=args.seed,
+    #     **vars(args)
+    # )
     
     data_module.prepare_data()
     data_module.setup()
