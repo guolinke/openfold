@@ -1,3 +1,6 @@
 *.pyc
 *.egg-info/*
 data/*
+small_data/*
+alignments/*
+lightning_logs/*

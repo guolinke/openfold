@@ -120,14 +120,14 @@ def main(args):
         logging.info("Successfully loaded model weights...")
 
     # TorchScript components of the model
-    script_preset_(model_module)
+    # script_preset_(model_module)
 
-    data_module = DummyDataLoader("test_data.pickle")
-    # data_module = OpenFoldDataModule(
-    #     config=config.data, 
-    #     batch_seed=args.seed,
-    #     **vars(args)
-    # )
+    # data_module = DummyDataLoader("test_data.pickle")
+    data_module = OpenFoldDataModule(
+        config=config.data, 
+        batch_seed=args.seed,
+        **vars(args)
+    )
     
     data_module.prepare_data()
     data_module.setup()
