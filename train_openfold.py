@@ -2,7 +2,7 @@ import argparse
 import logging
 import os
 
-#os.environ["CUDA_VISIBLE_DEVICES"] = "5"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 #os.environ["MASTER_ADDR"]="10.119.81.14"
 #os.environ["MASTER_PORT"]="42069"
 #os.environ["NODE_RANK"]="0"
@@ -13,7 +13,7 @@ import time
 import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-from pytorch_lightning.plugins.training_type import DeepSpeedPlugin
+from pytorch_lightning.plugins.training_type import DeepSpeedPlugin, DDPPlugin
 from pytorch_lightning.plugins.environments import SLURMEnvironment
 import torch
 
@@ -48,6 +48,8 @@ class OpenFoldWrapper(pl.LightningModule):
         self.ema = ExponentialMovingAverage(
             model=self.model, decay=config.ema.decay
         )
+        
+        self.cached_weights = None
 
     def forward(self, batch):
         return self.model(batch)
@@ -120,7 +122,8 @@ def main(args):
         logging.info("Successfully loaded model weights...")
 
     # TorchScript components of the model
-    # script_preset_(model_module)
+    if(args.script_modules):
+        script_preset_(model_module)
 
     # data_module = DummyDataLoader("test_data.pickle")
     data_module = OpenFoldDataModule(
@@ -128,10 +131,10 @@ def main(args):
         batch_seed=args.seed,
         **vars(args)
     )
-    
+
     data_module.prepare_data()
     data_module.setup()
-
+    
     callbacks = []
     if(args.checkpoint_best_val):
         checkpoint_dir = os.path.join(args.output_dir, "checkpoints")
@@ -153,7 +156,8 @@ def main(args):
             strict=True,
         )
         callbacks.append(es)
-    if args.log_performance:
+        
+    if(args.log_performance):
         global_batch_size = args.num_nodes * args.gpus
         perf = PerformanceLoggingCallback(
             log_file=os.path.join(args.output_dir, "performance_log.json"),
@@ -171,7 +175,7 @@ def main(args):
             cluster_environment=cluster_environment,
         )
     elif (args.gpus is not None and args.gpus) > 1 or args.num_nodes > 1:
-        strategy = "ddp"
+        strategy = DDPPlugin(find_unused_parameters=False)
     else:
         strategy = None
     
@@ -305,8 +309,12 @@ if __name__ == "__main__":
         help="Whether to load just model weights as opposed to training state"
     )
     parser.add_argument(
-        "--log_performance", action='store_true',
+        "--log_performance", type=bool_type, default=False,
         help="Measure performance"
+    )
+    parser.add_argument(
+        "--script_modules", type=bool_type, default=False,
+        help="Whether to TorchScript eligible components of them model"
     )
     parser = pl.Trainer.add_argparse_args(parser)
    

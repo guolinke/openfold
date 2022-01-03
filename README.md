@@ -70,7 +70,7 @@ you want to use DeepMind's MSA generation pipeline (w/ HMMR & HHblits) or
 MMseqs2 instead. For the former, run:
 
 ```bash
-scripts/download_alphafold_databases.sh data/
+scripts/download_alphafold_dbs.sh data/
 ```
 
 For the latter, run:
@@ -86,7 +86,7 @@ MMseqs2 should be split according to the memory available on the system).
 
 Alternatively, you can use raw MSAs from 
 [ProteinNet](https://github.com/aqlaboratory/proteinnet). After downloading
-the database, use `scripts/prepare_proteinnet_msas.py` to convert the data into
+the database, use `scripts/prep_proteinnet_msas.py` to convert the data into
 a format recognized by the OpenFold parser. The resulting directory becomes the
 `alignment_dir` used in subsequent steps. Use `scripts/unpack_proteinnet.py` to
 extract `.core` files from ProteinNet text files.
