@@ -515,7 +515,7 @@ class DummyDataset(torch.utils.data.Dataset):
         self.batch = batch
 
     def __getitem__(self, idx):
-        return self.batch
+        return copy.deepcopy(self.batch)
 
     def __len__(self):
         return 1024
