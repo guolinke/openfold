@@ -3,4 +3,5 @@
 data/*
 small_data/*
 alignments/*
+cifs/*
 lightning_logs/*

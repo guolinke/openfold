@@ -1,0 +1,1 @@
+python train_openfold.py small_data/ alignments/ cifs/ save/ 2021-10-10 --template_release_dates_cache_path mmcif_cache.json --precision 16 --gpus 1 --seed 42 --deepspeed_config_path deepspeed_config.json
