@@ -537,6 +537,9 @@ class DummyDataset(torch.utils.data.Dataset):
         self.data = []
         for file in self.files:
             cur_data = pickle.load(open(file, 'rb'))
+            for key in cur_data:
+                if cur_data[key].dtype == torch.half:
+                    cur_data[key] = cur_data[key].float()
             self.data.append(cur_data)
 
     def __getitem__(self, idx):

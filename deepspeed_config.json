@@ -15,7 +15,7 @@
       }
   },
   "fp16": {
-    "enabled": true,
+    "enabled": false,
     "min_loss_scale": 1
   },
   "amp": {
