@@ -125,12 +125,12 @@ def main(args):
     if(args.script_modules):
         script_preset_(model_module)
 
-    # data_module = DummyDataLoader("test_data.pickle")
-    data_module = OpenFoldDataModule(
-        config=config.data, 
-        batch_seed=args.seed,
-        **vars(args)
-    )
+    data_module = DummyDataLoader('pickle_data')
+    # data_module = OpenFoldDataModule(
+    #     config=config.data, 
+    #     batch_seed=args.seed,
+    #     **vars(args)
+    # )
 
     data_module.prepare_data()
     data_module.setup()

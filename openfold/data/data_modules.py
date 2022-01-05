@@ -533,38 +533,17 @@ class OpenFoldDataModule(pl.LightningDataModule):
 
 class DummyDataset(torch.utils.data.Dataset):
     def __init__(self, batch_path):
-        with open(batch_path, "rb") as f:
-            batch = pickle.load(f)
-        batch["residx_atom14_to_atom37"] = batch["residx_atom14_to_atom37"][0]
-        batch["atom14_atom_exists"] = batch["atom14_atom_exists"][0]
-
-        batch["no_recycling_iters"] = np.array([3., 3., 3., 3.,])
-        batch = {k: torch.as_tensor(v).cuda() for k, v in batch.items()}
-
-        batch["aatype"] = batch["aatype"].long()
-        batch["template_aatype"] = batch["template_aatype"].long()
-        batch["extra_msa"] = batch["extra_msa"].long()
-        batch["residx_atom37_to_atom14"] = batch[
-            "residx_atom37_to_atom14"
-        ].long()
-        batch["template_all_atom_mask"] = batch["template_all_atom_masks"]
-        batch.update(
-            data_transforms.atom37_to_torsion_angles("template_")(batch)
-        )
-        batch.update(
-            data_transforms.atom37_to_frames(batch)
-        )
-
-        # Move the recycling dimension to the end
-        move_dim = lambda t: t.permute(*range(len(t.shape))[1:], 0)
-        batch = tensor_tree_map(move_dim, batch)
-        self.batch = batch
+        self.files = [os.path.join(batch_path,f) for f in os.listdir(batch_path)]
+        self.data = []
+        for file in self.files:
+            cur_data = pickle.load(open(file, 'rb'))
+            self.data.append(cur_data)
 
     def __getitem__(self, idx):
-        return copy.deepcopy(self.batch)
+        return copy.deepcopy(self.data[idx])
 
     def __len__(self):
-        return 1024
+        return len(self.files)
 
 
 class DummyDataLoader(pl.LightningDataModule):
